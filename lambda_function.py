@@ -63,32 +63,34 @@ class SpecificNewsIntentHandler(AbstractRequestHandler):
         specific_news_slot_status_code = specific_news_slot_data.status.code
         logger.info('SPECIFIC_NEWS_SLOT_STATUS_CODE: ' + str(specific_news_slot_status_code))
 
-        specific_news_slot_data = specific_news_slot_data.values[0]
-        logger.info('SPECIFIC_NEWS_SLOT_DATA: ' + str(specific_news_slot_data))
+        if specific_news_slot_status_code:
+            specific_news_slot_data = specific_news_slot_data.values[0].value
 
-        wanted_type_of_news = specific_news_slot_data.value.name.title()
-        wanted_type_of_news_id = specific_news_slot_data.value.id
-        logger.info("WANTED TYPE OF NEWS: " + wanted_type_of_news)
-        logger.info("WANTED TYPE OF NEWS (ID): " + wanted_type_of_news_id)
+            wanted_type_of_news = specific_news_slot_data.name.title()
+            wanted_type_of_news_id = specific_news_slot_data.id
+            logger.info("WANTED TYPE OF NEWS: " + wanted_type_of_news)
+            logger.info("WANTED TYPE OF NEWS (ID): " + wanted_type_of_news_id)
 
-        logger.info("Scraping news data ...")
-        news_data = return_full_news_data()
-        logger.info("NEWS SCRAPED!!!")
+            logger.info("Scraping news data ...")
+            news_data = return_full_news_data()
+            logger.info("NEWS SCRAPED!!!")
 
-        headings = [*news_data]
-        logger.info(handler_input.request_envelope.request.intent.slots["specific_news_slot"])
+            headings = [*news_data]
+            logger.info(handler_input.request_envelope.request.intent.slots["specific_news_slot"])
 
-        desired_key = random.choice(headings)
-        for heading in headings:
-            if wanted_type_of_news in heading:
-                desired_key = heading
-                break
+            desired_key = random.choice(headings)
+            for heading in headings:
+                if wanted_type_of_news in heading:
+                    desired_key = heading
+                    break
 
-        news_list = news_data[desired_key]['news_list']
-        random_news_from_list = random.choice(news_list)
-        random_news_from_list_text = random_news_from_list['text']
+            news_list = news_data[desired_key]['news_list']
+            random_news_from_list = random.choice(news_list)
+            random_news_from_list_text = random_news_from_list['text']
 
-        output = random_news_from_list_text
+            output = random_news_from_list_text
+        else:
+            pass
 
         handler_input.response_builder.speak(output).set_card(
             SimpleCard(SKILL_NAME, output))
