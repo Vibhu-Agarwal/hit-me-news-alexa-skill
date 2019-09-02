@@ -56,11 +56,25 @@ class SpecificNewsIntentHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
         logger.info("In SpecificNewsIntentHandler")
-        wanted_type_of_news = handler_input.request_envelope.request.intent.slots["specific_news_slot"].value
+
+        specific_news_slot_request = handler_input.request_envelope.request.intent.slots["specific_news_slot"]
+        specific_news_slot_data = specific_news_slot_request.resolutions.resolutions_per_authority[0]
+
+        specific_news_slot_status_code = specific_news_slot_data.status.code
+        logger.info('SPECIFIC_NEWS_SLOT_STATUS_CODE: ' + str(specific_news_slot_status_code))
+
+        specific_news_slot_data = specific_news_slot_data.values[0]
+        logger.info('SPECIFIC_NEWS_SLOT_DATA: ' + str(specific_news_slot_data))
+
+        wanted_type_of_news = specific_news_slot_data.value.name.title()
+        wanted_type_of_news_id = specific_news_slot_data.value.id
         logger.info("WANTED TYPE OF NEWS: " + wanted_type_of_news)
+        logger.info("WANTED TYPE OF NEWS (ID): " + wanted_type_of_news_id)
+
         logger.info("Scraping news data ...")
-        news_data = return_full_news_data(logger)
+        news_data = return_full_news_data()
         logger.info("NEWS SCRAPED!!!")
+
         headings = [*news_data]
         logger.info(handler_input.request_envelope.request.intent.slots["specific_news_slot"])
 
