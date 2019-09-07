@@ -77,7 +77,6 @@ class SpecificNewsIntentHandler(AbstractRequestHandler):
             logger.info("NEWS SCRAPED!!!")
 
             headings = [*news_data]
-            logger.info(handler_input.request_envelope.request.intent.slots["specific_news_slot"])
 
             desired_key = random.choice(headings)
             for heading in headings:
