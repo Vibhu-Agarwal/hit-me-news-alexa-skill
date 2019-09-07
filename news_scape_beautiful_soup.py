@@ -4,6 +4,29 @@ from bs4 import BeautifulSoup
 url = "https://www.hindustantimes.com/"
 
 
+def scrape_top_news(logger=None):
+    if logger:
+        logger.info("Requesting URL")
+
+    response = requests.get(url)
+
+    news = {}
+
+    if logger:
+        logger.info(str(response))
+        logger.info('Making Soup Object ...')
+
+    soup = BeautifulSoup(response.content, 'html5lib')
+
+    if logger:
+        logger.info("Soup Object Made!")
+        logger.info("Trying to locate the proper div(s) of news sections")
+
+    top_news_block = get_top_news_block(soup)
+    news[top_news_block['heading']] = top_news_block
+    return news
+
+
 def get_top_news_block(soup):
     news_list = []
 

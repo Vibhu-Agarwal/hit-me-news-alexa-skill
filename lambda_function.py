@@ -1,4 +1,4 @@
-from news_scape_beautiful_soup import return_full_news_data
+from news_scape_beautiful_soup import return_full_news_data, scrape_top_news
 
 import random
 import logging
@@ -66,7 +66,7 @@ class SpecificNewsIntentHandler(AbstractRequestHandler):
         specific_news_slot_status_code = specific_news_slot_data['status_code']
         logger.info('SPECIFIC_NEWS_SLOT_STATUS_CODE: ' + str(specific_news_slot_status_code))
 
-        if specific_news_slot_status_code:
+        if str(specific_news_slot_status_code) == "StatusCode.ER_SUCCESS_MATCH":
             wanted_type_of_news = specific_news_slot_data['defined_value'].title()
             wanted_type_of_news_id = specific_news_slot_data['defined_value_id']
             logger.info("WANTED TYPE OF NEWS: " + wanted_type_of_news)
@@ -83,14 +83,18 @@ class SpecificNewsIntentHandler(AbstractRequestHandler):
                 if wanted_type_of_news in heading:
                     desired_key = heading
                     break
-
-            news_list = news_data[desired_key]['news_list']
-            random_news_from_list = random.choice(news_list)
-            random_news_from_list_text = random_news_from_list['text']
-
-            output = random_news_from_list_text
+            output = ""
         else:
-            pass
+            output = "I'm sorry, I could not identify the category of news you're looking for. "
+            output += "Here's one of the latest news you might be interested in. "
+            news_data = scrape_top_news()
+            desired_key = 'Top News'
+
+        news_list = news_data[desired_key]['news_list']
+        random_news_from_list = random.choice(news_list)
+        random_news_from_list_text = random_news_from_list['text']
+
+        output += random_news_from_list_text
 
         handler_input.response_builder.speak(output).set_card(
             SimpleCard(SKILL_NAME, output))
