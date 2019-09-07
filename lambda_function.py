@@ -8,6 +8,7 @@ from ask_sdk_core.dispatch_components import (
     AbstractRequestHandler, AbstractExceptionHandler,
     AbstractRequestInterceptor, AbstractResponseInterceptor)
 from ask_sdk_core.utils import is_request_type, is_intent_name
+from alexa import get_slot_data
 from ask_sdk_core.handler_input import HandlerInput
 
 from ask_sdk_model.ui import SimpleCard
@@ -57,17 +58,17 @@ class SpecificNewsIntentHandler(AbstractRequestHandler):
         # type: (HandlerInput) -> Response
         logger.info("In SpecificNewsIntentHandler")
 
-        specific_news_slot_request = handler_input.request_envelope.request.intent.slots["specific_news_slot"]
-        specific_news_slot_data = specific_news_slot_request.resolutions.resolutions_per_authority[0]
+        session_attributes = handler_input.attributes_manager.session_attributes
+        logger.info('SESSION ATTRIBUTES: ' + str(session_attributes))
 
-        specific_news_slot_status_code = specific_news_slot_data.status.code
+        specific_news_slot_data = get_slot_data(handler_input, 'specific_news_slot')
+
+        specific_news_slot_status_code = specific_news_slot_data['status_code']
         logger.info('SPECIFIC_NEWS_SLOT_STATUS_CODE: ' + str(specific_news_slot_status_code))
 
         if specific_news_slot_status_code:
-            specific_news_slot_data = specific_news_slot_data.values[0].value
-
-            wanted_type_of_news = specific_news_slot_data.name.title()
-            wanted_type_of_news_id = specific_news_slot_data.id
+            wanted_type_of_news = specific_news_slot_data['defined_value'].title()
+            wanted_type_of_news_id = specific_news_slot_data['defined_value_id']
             logger.info("WANTED TYPE OF NEWS: " + wanted_type_of_news)
             logger.info("WANTED TYPE OF NEWS (ID): " + wanted_type_of_news_id)
 
