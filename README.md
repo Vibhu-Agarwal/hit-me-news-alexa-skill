@@ -1,2 +1,2 @@
-# news-for-me-alexa-skill
-Backend Code for 'News-For-Me" Alexa Skill
+# hit-me-news-alexa-skill
+Backend Code for 'Hit-Me-News" Alexa Skill
